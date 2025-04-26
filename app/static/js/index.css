@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-gold: #C8A165;
+  --color-ivory: #F5F5F0;
+  --color-black: #000000;
+  --color-charcoal: #333333;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-white border border-black text-black px-6 py-3 rounded-md flex items-center gap-2 font-serif hover:bg-black hover:text-[#F5F5F0] transition-colors duration-300;
+  }
+  
+  .btn-link {
+    @apply text-[#C8A165] font-serif text-lg border-b border-[#C8A165] pb-1 hover:text-black hover:border-black transition-colors duration-300;
+  }
+  
+  .upload-area {
+    @apply border border-[#C8A165] rounded-lg p-12 flex flex-col items-center justify-center transition-all duration-300;
+  }
+} 
