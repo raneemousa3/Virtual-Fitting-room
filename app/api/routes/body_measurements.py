@@ -5,10 +5,17 @@ from datetime import datetime
 from typing import Dict, Optional
 import uuid
 import json
+<<<<<<< HEAD
 from app.services.body_measurements import HybridMeasurementSystem as BodyMeasurementService
 
 router = APIRouter()
 measurement_service = BodyMeasurementService(device="cpu")  # Use CPU for now, can be changed to "cuda" if GPU available
+=======
+from app.services.body_measurements import BodyMeasurementService
+
+router = APIRouter()
+measurement_service = BodyMeasurementService()
+>>>>>>> 49609e01e978a0f529218ad92dc868f66d5ef6e9
 
 # Ensure upload directory exists
 UPLOAD_DIR = "static/images/uploads"
@@ -49,11 +56,16 @@ async def upload_image_and_get_measurements(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
         file_extension = os.path.splitext(file.filename)[1]
+<<<<<<< HEAD
         new_filename = f"{timestamp}_{unique_id}.jpg"
+=======
+        new_filename = f"{timestamp}_{unique_id}{file_extension}"
+>>>>>>> 49609e01e978a0f529218ad92dc868f66d5ef6e9
         file_path = os.path.join(UPLOAD_DIR, new_filename)
         print(f"DEBUG: Saving file to: {file_path}")
 
         # Save the file
+<<<<<<< HEAD
         with open(file_path, "wb") as f:
             f.write(content)
 
@@ -99,6 +111,52 @@ async def upload_image_and_get_measurements(
                 status_code=400,
                 detail=f"Error processing image: {str(e)}"
             )
+=======
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+
+        # Process the image and get measurements
+        try:
+            print(f"DEBUG: Processing image with height: {height}")
+            measurements = await measurement_service.process_image(file_path, height)
+            print(f"DEBUG: Got measurements: {measurements}")
+            print(f"DEBUG: Measurement keys: {list(measurements.keys())}")
+            
+            if not measurements:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No measurements could be extracted from the image. Please ensure your full body is visible and try again."
+                )
+        except ValueError as e:
+            print(f"DEBUG: Error processing image: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+        # Add weight if provided
+        if weight:
+            if weight < 30 or weight > 200:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Weight must be between 30 and 200 kg"
+                )
+            measurements["weight"] = weight
+
+        # Get fit rating if garment size is provided
+        fit_rating = None
+        if garment_size:
+            fit_rating = measurement_service.get_fit_rating(measurements, garment_size)
+            measurements["fit_rating"] = fit_rating
+
+        response_data = {
+            "status": "success",
+            "message": "Image processed successfully",
+            "measurements": measurements,
+            "fit_rating": fit_rating,
+            "image_path": f"/static/images/uploads/{new_filename}"
+        }
+        print(f"DEBUG: Sending response: {response_data}")
+        print(f"DEBUG: Response measurement keys: {list(response_data['measurements'].keys())}")
+        return JSONResponse(content=response_data)
+>>>>>>> 49609e01e978a0f529218ad92dc868f66d5ef6e9
 
     except HTTPException as he:
         print(f"DEBUG: HTTP Exception: {str(he)}")

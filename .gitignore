@@ -24,6 +24,7 @@ wheels/
 venv/
 ENV/
 env/
+.env
 
 # IDE
 .idea/
@@ -44,4 +45,4 @@ yarn-error.log
 # Project specific
 static/images/uploads/*
 !static/images/uploads/.gitkeep
-*.log 
+*.log

@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+=======
+>>>>>>> 49609e01e978a0f529218ad92dc868f66d5ef6e9
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
