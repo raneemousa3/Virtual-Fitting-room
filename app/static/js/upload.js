@@ -77,12 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const formData = new FormData();
-        formData.append('file', currentFile);
-        formData.append('height', height.toString());
+        formData.append('mask_image', currentFile);
+        formData.append('mask_left_image', currentFile);  // For now, using same image for both views
+        formData.append('camera_info', JSON.stringify({
+            focal_length: 50.0,
+            sensor_height: 24.0,
+            image_height: 256.0
+        }));
 
         try {
             loadingOverlay.style.display = 'flex';
-            const response = await fetch('/api/v1/measurements/upload', {
+            const response = await fetch('/predict/', {
                 method: 'POST',
                 body: formData
             });
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             console.log('Response data:', data);
-            displayMeasurements(data.measurements);
+            displayMeasurements(data);
         } catch (error) {
             console.error('Error:', error);
             alert('Error processing image: ' + error.message);
@@ -130,28 +135,43 @@ document.addEventListener('DOMContentLoaded', () => {
         heightInput.value = '';
     }
 
-    function displayMeasurements(measurements) {
-        console.log('Displaying measurements:', measurements);
+    function displayMeasurements(data) {
+        console.log('Displaying measurements:', data);
         measurementsGrid.innerHTML = '';
         
         const measurementTypes = {
-            chest_cm: 'Chest',
-            waist_cm: 'Waist',
-            hips_cm: 'Hips',
-            sleeve_cm: 'Sleeve Length',
-            inseam_cm: 'Inseam'
+            'height': 'Height',
+            'shoulder-to-crotch': 'Shoulder to Crotch',
+            'waist': 'Waist',
+            'chest': 'Chest',
+            'shoulder-breadth': 'Shoulder Breadth',
+            'hip': 'Hip',
+            'ankle': 'Ankle',
+            'arm-length': 'Arm Length',
+            'bicep': 'Bicep',
+            'calf': 'Calf',
+            'forearm': 'Forearm',
+            'leg-length': 'Leg Length',
+            'thigh': 'Thigh',
+            'wrist': 'Wrist'
         };
 
         let hasMeasurements = false;
         for (const [key, label] of Object.entries(measurementTypes)) {
-            console.log(`Checking measurement: ${key}, value:`, measurements[key]);
-            if (measurements[key]) {
+            if (data.measurements[key]) {
                 hasMeasurements = true;
+                const confidence = data.confidence_scores[key] || 0;
+                const confidenceClass = confidence > 0.8 ? 'high' : confidence > 0.6 ? 'medium' : 'low';
+                
                 const card = document.createElement('div');
                 card.className = 'measurement-card';
                 card.innerHTML = `
                     <h3>${label}</h3>
-                    <p>${measurements[key].toFixed(1)} cm</p>
+                    <p class="measurement-value">${data.measurements[key].toFixed(1)} cm</p>
+                    <div class="confidence-indicator">
+                        <div class="confidence-bar ${confidenceClass}" style="width: ${confidence * 100}%"></div>
+                        <span class="confidence-text">${(confidence * 100).toFixed(0)}% confidence</span>
+                    </div>
                 `;
                 measurementsGrid.appendChild(card);
             }
@@ -166,6 +186,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>Please try uploading a different image or ensure your pose is clearly visible.</p>
             `;
             measurementsGrid.appendChild(errorCard);
+        }
+
+        // Add body type summary if available
+        if (data.body_summary) {
+            const summaryCard = document.createElement('div');
+            summaryCard.className = 'summary-card';
+            summaryCard.innerHTML = `
+                <h3>Body Type Summary</h3>
+                <p><strong>Body Type:</strong> ${data.body_summary.body_type}</p>
+                <p><strong>Size Category:</strong> ${data.body_summary.size_category}</p>
+                <p><strong>Height Category:</strong> ${data.body_summary.height_category}</p>
+                <p><strong>Waist-to-Hip Ratio:</strong> ${data.body_summary.waist_to_hip_ratio}</p>
+            `;
+            measurementsGrid.appendChild(summaryCard);
         }
 
         resultsSection.style.display = 'block';

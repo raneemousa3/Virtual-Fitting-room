@@ -387,4 +387,69 @@ input[type="number"]:focus {
 
 .measurements-form, .results-section {
     animation: fadeIn 0.5s ease-out;
+}
+
+.measurement-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.measurement-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+}
+
+.confidence-indicator {
+    margin-top: 0.5rem;
+}
+
+.confidence-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.confidence-bar.high {
+    background-color: #10B981;  /* Green */
+}
+
+.confidence-bar.medium {
+    background-color: #F59E0B;  /* Yellow */
+}
+
+.confidence-bar.low {
+    background-color: #EF4444;  /* Red */
+}
+
+.confidence-text {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.summary-card {
+    background: #F3F4F6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.summary-card h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.summary-card p {
+    margin: 0.5rem 0;
+    color: #374151;
+}
+
+.summary-card strong {
+    color: #1F2937;
 } 
