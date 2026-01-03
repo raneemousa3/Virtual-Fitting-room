@@ -1,4 +1,4 @@
-# Counting On You - Virtual Fitting Room
+# Fitted- Virtual Fitting Room
 
 A modern virtual fitting room application with a Chanel-inspired design, built with FastAPI, React, and Tailwind CSS.
 
